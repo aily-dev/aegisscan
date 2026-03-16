@@ -13,10 +13,10 @@
 
 [![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-34D399?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Stars](https://img.shields.io/github/stars/USERNAME/aegisscan?style=flat-square&color=34D399)](https://github.com/USERNAME/aegisscan)
-[![Forks](https://img.shields.io/github/forks/USERNAME/aegisscan?style=flat-square&color=3776AB)](https://github.com/USERNAME/aegisscan/network)
-[![Issues](https://img.shields.io/github/issues/USERNAME/aegisscan?style=flat-square&color=f87171)](https://github.com/USERNAME/aegisscan/issues)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-34D399?style=flat-square)](https://github.com/USERNAME/aegisscan/pulls)
+[![Stars](https://img.shields.io/github/stars/aily-dev/aegisscan?style=flat-square&color=34D399)](https://github.com/aily-dev/aegisscan)
+[![Forks](https://img.shields.io/github/forks/aily-dev/aegisscan?style=flat-square&color=3776AB)](https://github.com/aily-dev/aegisscan/network)
+[![Issues](https://img.shields.io/github/issues/aily-dev/aegisscan?style=flat-square&color=f87171)](https://github.com/aily-dev/aegisscan/issues)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-34D399?style=flat-square)](https://github.com/aily-dev/aegisscan/pulls)
 
 <img src="https://readme-typing-svg.herokuapp.com?font=JetBrains+Mono&size=14&pause=1000&color=34D399&center=true&vCenter=true&random=false&width=600&lines=Deep+Recon+%26+Scanning+Engine;20%2B+Vulnerability+Scanners;Native+C%2B%2B+Performance+Core;SQLMap+%26+XSStrike+Integrated;Production-Ready+%7C+CLI+%2B+API" alt="Typing SVG" />
 
