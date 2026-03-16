@@ -1,0 +1,19 @@
+id: example-template
+info:
+  name: Example Security Check
+  severity: medium
+  description: Example template for demonstration
+
+requests:
+  - method: GET
+    path: "/api/status"
+    headers:
+      User-Agent: AegisScan/1.0
+    matchers:
+      - type: status
+        status: [200, 401, 403]
+      - type: word
+        words: ["api", "status"]
+        part: body
+        condition: and
+
