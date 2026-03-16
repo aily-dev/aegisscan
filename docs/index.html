@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AegisScan – Advanced Web Security Testing Framework</title>
+  <meta name="description" content="AegisScan is an advanced web security testing framework for deep vulnerability scanning, API security, and reconnaissance." />
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            aegis: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#020617',
+            },
+          },
+          boxShadow: {
+            'neon': '0 0 25px rgba(99,102,241,0.6)',
+          },
+        },
+      },
+    };
+  </script>
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Inlined styles from styles.css -->
+  <style>
+/* Small custom layer on top of Tailwind for nicer components */
+
+.feature-card {
+  @apply relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 p-4 shadow-xl transition-transform duration-200 hover:-translate-y-1 hover:shadow-neon;
+}
+
+.feature-icon {
+  @apply mb-3 h-9 w-9 rounded-xl shadow-md shadow-slate-900/70 ring-1 ring-white/20;
+}
+
+.feature-title {
+  @apply text-sm font-semibold text-slate-50;
+}
+
+.feature-text {
+  @apply mt-2 text-xs leading-relaxed text-slate-300;
+}
+
+.feature-list {
+  @apply mt-3 space-y-1.5 text-xs text-slate-300;
+}
+
+.tutorial-step {
+  @apply relative flex gap-3 rounded-2xl border border-white/10 bg-slate-950/80 p-3 shadow-md shadow-slate-900/80;
+}
+
+.step-number {
+  @apply flex h-7 w-7 items-center justify-center rounded-full bg-aegis-600/80 text-xs font-semibold text-white shadow;
+}
+
+.step-title {
+  @apply text-sm font-semibold text-slate-50;
+}
+
+.step-text {
+  @apply mt-1 text-xs leading-relaxed text-slate-300;
+}
+
+.code-block {
+  @apply mt-3 w-full overflow-x-auto rounded-xl bg-slate-900/90 px-3 py-2 text-[11px] leading-relaxed text-emerald-100 shadow-inner shadow-black/60;
+}
+
+.command-card {
+  @apply rounded-2xl border border-white/10 bg-slate-950/80 p-4 shadow-md shadow-slate-900/80;
+}
+
+.command-title {
+  @apply text-sm font-semibold text-slate-50;
+}
+
+.command-list {
+  @apply mt-3 space-y-3 text-xs text-slate-300;
+}
+
+.command-label {
+  @apply inline-flex items-center rounded-full bg-slate-900/80 px-2 py-0.5 text-[11px] font-semibold text-aegis-100 ring-1 ring-aegis-500/60;
+}
+
+.command-text {
+  @apply mt-1 text-xs leading-relaxed text-slate-300;
+}
+
+/* Docs */
+.docs-sidebar {
+  @apply lg:sticky lg:top-24 lg:self-start;
+}
+
+.docs-sidebar-card {
+  @apply overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 p-4 shadow-xl;
+}
+
+.docs-toc-link {
+  @apply block rounded-xl px-3 py-2 text-xs text-slate-300 hover:bg-slate-900/70 hover:text-white;
+}
+
+.docs-toc-link.active {
+  @apply bg-aegis-600/20 text-white ring-1 ring-aegis-500/50;
+}
+
+.docs-section {
+  @apply rounded-2xl border border-white/10 bg-slate-950/70 p-4 shadow-xl;
+}
+
+.docs-section-head {
+  @apply border-b border-white/10 pb-3;
+}
+
+.docs-h3 {
+  @apply text-base font-semibold text-slate-50;
+}
+
+.docs-lead {
+  @apply mt-1 text-xs leading-relaxed text-slate-300;
+}
+
+.docs-grid {
+  @apply mt-4 grid gap-4 md:grid-cols-2;
+}
+
+.docs-card {
+  @apply rounded-2xl border border-white/10 bg-slate-950/60 p-4 shadow-inner shadow-black/40;
+}
+
+.docs-h4 {
+  @apply text-sm font-semibold text-slate-50;
+}
+
+.docs-p {
+  @apply mt-2 text-xs leading-relaxed text-slate-300;
+}
+
+.docs-ul {
+  @apply mt-2 list-disc space-y-1 pl-4 text-xs leading-relaxed text-slate-300;
+}
+
+.docs-chip {
+  @apply inline-flex items-center rounded-full border border-white/10 bg-slate-900/70 px-2.5 py-1 text-[11px] font-semibold text-slate-200;
+}
+
+.docs-mini {
+  @apply rounded-xl border border-white/10 bg-slate-900/60 p-3;
+}
+
+.docs-mini-title {
+  @apply text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400;
+}
+
+.docs-mini-text {
+  @apply mt-1 text-xs leading-relaxed text-slate-200/90;
+}
+
+.docs-tags {
+  @apply mt-3 flex flex-wrap gap-2;
+}
+
+.docs-tag {
+  @apply inline-flex items-center rounded-full bg-slate-900/70 px-2 py-0.5 text-[11px] font-semibold text-slate-200 ring-1 ring-white/10;
+}
+
+.docs-callout {
+  @apply mt-4 rounded-2xl border p-4;
+}
+
+.docs-callout-title {
+  @apply text-sm font-semibold text-slate-50;
+}
+
+.docs-callout-text {
+  @apply mt-1 text-xs leading-relaxed text-slate-200/90;
+}
+
+.docs-callout-indigo {
+  @apply border-aegis-500/40 bg-aegis-600/10;
+}
+
+.docs-callout-emerald {
+  @apply border-emerald-400/40 bg-emerald-500/10;
+}
+
+.docs-callout-rose {
+  @apply border-rose-400/40 bg-rose-500/10;
+}
+
+.docs-highlight {
+  @apply rounded bg-amber-400/20 px-1 text-amber-200 ring-1 ring-amber-400/30;
+}
+
+/* FAQ accordion */
+.faq-acc-item {
+  @apply overflow-hidden rounded-2xl border border-white/10 bg-slate-950/70 shadow-xl;
+}
+
+.faq-acc-btn {
+  @apply flex w-full items-center justify-between gap-3 px-4 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aegis-500;
+}
+
+.faq-acc-q {
+  @apply text-sm font-semibold text-slate-50;
+}
+
+.faq-acc-icon {
+  @apply relative h-8 w-8 shrink-0 rounded-xl bg-slate-900/70 ring-1 ring-white/10;
+}
+
+.faq-acc-icon::before,
+.faq-acc-icon::after {
+  content: "";
+  @apply absolute left-1/2 top-1/2 h-0.5 w-4 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-200/80 transition-transform duration-200;
+}
+
+.faq-acc-icon::after {
+  @apply rotate-90;
+}
+
+.faq-acc-item.open .faq-acc-icon::after {
+  @apply rotate-0;
+}
+
+.faq-acc-panel {
+  @apply px-4 pb-4;
+}
+
+.faq-acc-a {
+  @apply text-xs leading-relaxed text-slate-300;
+}
+
+/* Language RTL support for Persian */
+.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl code {
+  direction: ltr;
+}
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-50 font-sans antialiased transition-colors duration-300" id="rootBody">
+  <!-- Background grid / glow -->
+  <div class="fixed inset-0 -z-10 overflow-hidden">
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.35),_transparent_60%),radial-gradient(circle_at_bottom,_rgba(8,47,73,0.8),_transparent_60%)]"></div>
+    <div class="pointer-events-none absolute inset-0 opacity-30"
+         style="background-image: linear-gradient(to_right, rgba(148,163,184,0.15) 1px, transparent 1px), linear-gradient(to_bottom, rgba(148,163,184,0.15) 1px, transparent 1px); background-size: 48px 48px;">
+    </div>
+  </div>
+
+  <!-- Page container -->
+  <div class="relative min-h-screen">
+    <!-- Navbar -->
+    <header class="sticky top-0 z-30 border-b border-white/5 bg-slate-950/70 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-aegis-600/20 ring-1 ring-aegis-500/60 shadow-neon">
+            <span class="text-xl font-semibold text-aegis-100">A</span>
+          </div>
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-aegis-200" data-i18n="brand.badge">Security</p>
+            <p class="text-sm font-semibold text-slate-100">
+              <span class="tracking-wide">AegisScan</span>
+              <span class="ml-1 hidden text-xs text-slate-400 sm:inline" data-i18n="brand.tagline">Advanced Web Security Scanner</span>
+            </p>
+          </div>
+        </div>
+
+        <nav class="hidden items-center gap-6 text-xs font-medium text-slate-300 sm:flex">
+          <a href="#overview" class="nav-link hover:text-white" data-i18n="nav.overview">Overview</a>
+          <a href="#features" class="nav-link hover:text-white" data-i18n="nav.features">Features</a>
+          <a href="#tutorial" class="nav-link hover:text-white" data-i18n="nav.tutorial">Tutorial</a>
+          <a href="#commands" class="nav-link hover:text-white" data-i18n="nav.commands">CLI Modes</a>
+          <a href="#faq" class="nav-link hover:text-white" data-i18n="nav.faq">FAQ</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <!-- Language switcher -->
+          <div class="relative">
+            <button id="langToggle" class="inline-flex items-center gap-1 rounded-full border border-white/10 bg-slate-900/70 px-3 py-1.5 text-xs font-medium text-slate-100 shadow-sm hover:border-aegis-500/70 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aegis-500">
+              <span id="langLabel">EN</span>
+              <svg class="h-3 w-3 text-slate-400" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+            <div id="langMenu" class="absolute right-0 z-20 mt-2 hidden w-32 overflow-hidden rounded-lg border border-white/10 bg-slate-900/95 text-xs shadow-lg">
+              <button data-lang="en" class="flex w-full items-center justify-between px-3 py-1.5 text-left text-slate-200 hover:bg-aegis-600/40">
+                <span>English</span><span class="text-[10px] text-aegis-200">EN</span>
+              </button>
+              <button data-lang="fa" class="flex w-full items-center justify-between px-3 py-1.5 text-left text-slate-200 hover:bg-aegis-600/40">
+                <span>فارسی</span><span class="text-[10px] text-aegis-200">FA</span>
+              </button>
+              <button data-lang="de" class="flex w-full items-center justify-between px-3 py-1.5 text-left text-slate-200 hover:bg-aegis-600/40">
+                <span>Deutsch</span><span class="text-[10px] text-aegis-200">DE</span>
+              </button>
+              <button data-lang="tr" class="flex w-full items-center justify-between px-3 py-1.5 text-left text-slate-200 hover:bg-aegis-600/40">
+                <span>Türkçe</span><span class="text-[10px] text-aegis-200">TR</span>
+              </button>
+              <button data-lang="fr" class="flex w-full items-center justify-between px-3 py-1.5 text-left text-slate-200 hover:bg-aegis-600/40">
+                <span>Français</span><span class="text-[10px] text-aegis-200">FR</span>
+              </button>
+            </div>
+          </div>
+          <!-- CTA -->
+          <a href="#tutorial" class="hidden items-center gap-2 rounded-full bg-gradient-to-r from-aegis-500 via-aegis-600 to-indigo-500 px-4 py-2 text-xs font-semibold text-white shadow-neon hover:brightness-110 sm:inline-flex">
+            <span data-i18n="cta.primary">Get Started</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="mx-auto max-w-6xl px-4 pb-16 pt-10 sm:px-6 lg:px-8">
+      <!-- Hero -->
+      <section id="overview" class="grid gap-y-10 gap-x-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-center">
+        <div>
+          <p class="inline-flex items-center gap-2 rounded-full border border-emerald-400/50 bg-emerald-500/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.25em] text-emerald-200">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.9)]"></span>
+            <span data-i18n="hero.badge">Offensive Security Toolkit</span>
+          </p>
+          <h1 class="mt-5 text-balance text-3xl font-semibold leading-tight tracking-tight text-slate-50 sm:text-4xl lg:text-5xl" data-i18n="hero.title">
+            Deep web security scanning for serious pentesters.
+          </h1>
+          <p class="mt-4 max-w-xl text-sm leading-relaxed text-slate-300" data-i18n="hero.subtitle">
+            AegisScan combines advanced crawling, vulnerability scanners, recon modules, and external tools into a single hacker‑themed CLI for deep testing of modern web applications and APIs.
+          </p>
+
+          <div class="mt-6 flex flex-wrap items-center gap-4">
+            <a href="#tutorial" class="inline-flex items-center gap-2 rounded-full bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-900 shadow hover:bg-white">
+              <span data-i18n="hero.ctaPrimary">Run your first scan</span>
+              <span class="text-[10px] text-slate-500">aegis.sh</span>
+            </a>
+            <a href="#features" class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-slate-900/70 px-4 py-2 text-xs font-semibold text-slate-100 hover:border-aegis-500/60">
+              <span data-i18n="hero.ctaSecondary">Explore capabilities</span>
+            </a>
+          </div>
+
+          <dl class="mt-8 grid max-w-xl grid-cols-2 gap-4 text-xs text-slate-300 sm:text-sm">
+            <div class="rounded-xl border border-white/10 bg-slate-900/60 p-3">
+              <dt class="text-[11px] uppercase tracking-[0.18em] text-slate-400" data-i18n="hero.stats.targetsLabel">Targets</dt>
+              <dd class="mt-1 font-semibold text-slate-50" data-i18n="hero.stats.targetsValue">Web apps, APIs, microservices</dd>
+            </div>
+            <div class="rounded-xl border border-white/10 bg-slate-900/60 p-3">
+              <dt class="text-[11px] uppercase tracking-[0.18em] text-slate-400" data-i18n="hero.stats.modesLabel">Scan Modes</dt>
+              <dd class="mt-1 font-semibold text-slate-50" data-i18n="hero.stats.modesValue">Deep, SQLi, XSS, API & more</dd>
+            </div>
+          </dl>
+
+          <p class="mt-4 text-[11px] text-slate-400" data-i18n="hero.disclaimer">
+            Use AegisScan only on systems you explicitly own or have written permission to test.
+          </p>
+        </div>
+
+        <!-- Hero visual: terminal card -->
+        <div class="relative">
+          <div class="pointer-events-none absolute -inset-1 rounded-3xl bg-gradient-to-br from-aegis-500/60 via-emerald-400/20 to-sky-500/40 opacity-60 blur-2xl"></div>
+          <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-slate-950/90 shadow-2xl shadow-slate-900/80">
+            <div class="flex items-center justify-between border-b border-white/10 bg-slate-900/70 px-4 py-2.5">
+              <div class="flex items-center gap-1.5">
+                <span class="h-2 w-2 rounded-full bg-red-500"></span>
+                <span class="h-2 w-2 rounded-full bg-amber-400"></span>
+                <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+              </div>
+              <span class="truncate text-[11px] text-slate-400">aegis@terminal:~</span>
+            </div>
+            <div class="space-y-1.5 bg-gradient-to-b from-slate-950 to-slate-900 px-4 pb-4 pt-3 text-[11px] leading-relaxed text-emerald-100">
+              <p><span class="text-slate-500">$</span> <span class="text-sky-300">chmod</span> +x aegis.sh</p>
+              <p><span class="text-slate-500">$</span> <span class="text-sky-300">./aegis.sh</span></p>
+              <p class="mt-2 text-aegis-200" data-i18n="terminal.banner">
+                ▌ AegisScan v1.0 – Advanced Web Security Testing Framework
+              </p>
+              <p class="text-emerald-300" data-i18n="terminal.menu">
+                [1] Deep Scan · [2] Normal Scan · [3] SQLi · [4] XSS · [5] Ports · [6] Directories · [7] Subdomains · …
+              </p>
+              <p class="mt-2 text-slate-300" data-i18n="terminal.example">
+                Select <span class="text-emerald-300">1</span> and enter a target like <span class="text-sky-300">https://example.com</span> to perform a full deep scan.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features -->
+      <section id="features" class="mt-16 border-t border-white/5 pt-10">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-semibold text-slate-50 sm:text-2xl" data-i18n="features.title">Why AegisScan?</h2>
+            <p class="mt-2 max-w-2xl text-sm text-slate-300" data-i18n="features.subtitle">
+              AegisScan is built for modern offensive security workflows: from deep crawling and recon to focused vulnerability testing and reporting.
+            </p>
+          </div>
+          <p class="text-xs text-slate-400" data-i18n="features.badge">
+            DeepScanner core · Async HTTP client · External tools integration
+          </p>
+        </div>
+
+        <div class="mt-6 grid gap-5 md:grid-cols-3">
+          <article class="feature-card">
+            <div class="feature-icon bg-gradient-to-br from-aegis-500 to-sky-500/80"></div>
+            <h3 class="feature-title" data-i18n="features.deepScan.title">Deep scanning engine</h3>
+            <p class="feature-text" data-i18n="features.deepScan.body">
+              Crawl links, forms, endpoints, JavaScript files, inputs, ports, and directories with the async DeepScanner and consolidated JSON summaries.
+            </p>
+            <ul class="feature-list">
+              <li data-i18n="features.deepScan.item1">Configurable depth and page limits</li>
+              <li data-i18n="features.deepScan.item2">Open ports & discovered directories overview</li>
+              <li data-i18n="features.deepScan.item3">Exportable scan_summary.json reports</li>
+            </ul>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon bg-gradient-to-br from-emerald-400 to-lime-400/80"></div>
+            <h3 class="feature-title" data-i18n="features.vulnCoverage.title">Wide vulnerability coverage</h3>
+            <p class="feature-text" data-i18n="features.vulnCoverage.body">
+              Switch between focused scanners: SQLi, XSS, command injection, path traversal, LFI/RFI, SSTI, CSRF, auth/session, JWT, file uploads, and more.
+            </p>
+            <ul class="feature-list">
+              <li data-i18n="features.vulnCoverage.item1">OWASP Top 10 & beyond</li>
+              <li data-i18n="features.vulnCoverage.item2">Per‑severity and per‑type statistics</li>
+              <li data-i18n="features.vulnCoverage.item3">Detailed findings with payloads & evidence</li>
+            </ul>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon bg-gradient-to-br from-fuchsia-500 to-rose-500/80"></div>
+            <h3 class="feature-title" data-i18n="features.recon.title">Recon & automation</h3>
+            <p class="feature-text" data-i18n="features.recon.body">
+              Enumerate subdomains, brute‑force directories, scan top ports, analyze security headers, and chain scans with an interactive Bash launcher.
+            </p>
+            <ul class="feature-list">
+              <li data-i18n="features.recon.item1">Subdomain & takeover detection modules</li>
+              <li data-i18n="features.recon.item2">Enhanced port scanning & service testing</li>
+              <li data-i18n="features.recon.item3">API, GraphQL, NoSQL & WebSocket coverage</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <!-- Tutorial: step-by-step -->
+      <section id="tutorial" class="mt-16 border-t border-white/5 pt-10">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-semibold text-slate-50 sm:text-2xl" data-i18n="tutorial.title">Step‑by‑step usage guide</h2>
+            <p class="mt-2 max-w-2xl text-sm text-slate-300" data-i18n="tutorial.subtitle">
+              Follow these steps to install dependencies, launch the interactive menu, and run deep or focused scans against your targets.
+            </p>
+          </div>
+          <span class="rounded-full border border-emerald-400/60 bg-emerald-500/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.2em] text-emerald-200" data-i18n="tutorial.badge">
+            Quickstart · CLI based
+          </span>
+        </div>
+
+        <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+          <!-- Steps -->
+          <ol class="space-y-4 text-sm text-slate-200">
+            <li class="tutorial-step">
+              <div class="step-number">1</div>
+              <div>
+                <h3 class="step-title" data-i18n="tutorial.step1.title">Clone & prepare the project</h3>
+                <p class="step-text" data-i18n="tutorial.step1.body">
+                  Clone the repository to your system and ensure you have Python 3, Bash, and required security tools installed. AegisScan runs from the project root.
+                </p>
+                <pre class="code-block"><code>git clone &lt;repo-url&gt;
+cd z-Tools   # or your cloned folder</code></pre>
+              </div>
+            </li>
+
+            <li class="tutorial-step">
+              <div class="step-number">2</div>
+              <div>
+                <h3 class="step-title" data-i18n="tutorial.step2.title">Make the launcher executable</h3>
+                <p class="step-text" data-i18n="tutorial.step2.body">
+                  The `aegis.sh` script provides a hacker‑style interactive menu that generates and runs the appropriate Python scan script for you.
+                </p>
+                <pre class="code-block"><code>chmod +x aegis.sh
+./aegis.sh</code></pre>
+              </div>
+            </li>
+
+            <li class="tutorial-step">
+              <div class="step-number">3</div>
+              <div>
+                <h3 class="step-title" data-i18n="tutorial.step3.title">Choose a scan mode</h3>
+                <p class="step-text" data-i18n="tutorial.step3.body">
+                  From the main menu select a scan: deep scan (1), normal scan (2), or a focused module such as SQLi (3), XSS (4), port scanning (5), directory brute‑force (6), subdomains (7), and many more.
+                </p>
+              </div>
+            </li>
+
+            <li class="tutorial-step">
+              <div class="step-number">4</div>
+              <div>
+                <h3 class="step-title" data-i18n="tutorial.step4.title">Enter the target URL</h3>
+                <p class="step-text" data-i18n="tutorial.step4.body">
+                  Provide the full target URL. If you omit the scheme, AegisScan will automatically prepend <code>http://</code> and warn you, so you always know exactly what is being scanned.
+                </p>
+              </div>
+            </li>
+
+            <li class="tutorial-step">
+              <div class="step-number">5</div>
+              <div>
+                <h3 class="step-title" data-i18n="tutorial.step5.title">Review results & JSON report</h3>
+                <p class="step-text" data-i18n="tutorial.step5.body">
+                  Scan output shows discovered URLs, forms, ports, directories, and a breakdown of vulnerabilities by severity and type. Detailed data is stored in an output directory such as <code>scan_results_YYYYMMDD_HHMMSS</code> with <code>scan_summary.json</code> for further analysis.
+                </p>
+              </div>
+            </li>
+          </ol>
+
+          <!-- Highlight: Deep scan Python CLI -->
+          <div class="rounded-2xl border border-white/10 bg-slate-950/80 p-4 shadow-xl">
+            <p class="text-xs font-medium uppercase tracking-[0.18em] text-slate-400" data-i18n="tutorial.altTitle">
+              Direct Python deep scan
+            </p>
+            <p class="mt-2 text-sm text-slate-200" data-i18n="tutorial.altBody">
+              You can also run the deep scanner directly via the Python entrypoint defined in <code>main.py</code>.
+            </p>
+            <pre class="mt-4 code-block text-[11px]"><code>python3 main.py https://example.com \
+  --output my_scan \
+  --proxy http://127.0.0.1:8080</code></pre>
+            <ul class="mt-4 space-y-2 text-xs text-slate-300">
+              <li data-i18n="tutorial.altItem1">Deep crawling with async HTTP client and TLS verification</li>
+              <li data-i18n="tutorial.altItem2">Summaries grouped by severity and vulnerability type</li>
+              <li data-i18n="tutorial.altItem3">Ports, directories, and external tools all in one report</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Commands overview -->
+      <section id="commands" class="mt-16 border-t border-white/5 pt-10">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-semibold text-slate-50 sm:text-2xl" data-i18n="commands.title">Interactive menu commands</h2>
+            <p class="mt-2 max-w-2xl text-sm text-slate-300" data-i18n="commands.subtitle">
+              The launcher presents over 30 scan options; here are some of the most important ones and when to use them.
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-6 grid gap-4 lg:grid-cols-3">
+          <div class="command-card">
+            <h3 class="command-title" data-i18n="commands.core.title">Core scans</h3>
+            <ul class="command-list">
+              <li>
+                <span class="command-label">1 · Deep Scan</span>
+                <p class="command-text" data-i18n="commands.core.deep">
+                  Full discovery, multi‑module vulnerability scan, external tools enabled — ideal for full engagements.
+                </p>
+              </li>
+              <li>
+                <span class="command-label">2 · Normal Scan</span>
+                <p class="command-text" data-i18n="commands.core.normal">
+                  Faster scan with reduced depth and no external tools; good for quick assessments.
+                </p>
+              </li>
+              <li>
+                <span class="command-label">9 · Passive Analysis</span>
+                <p class="command-text" data-i18n="commands.core.passive">
+                  No‑impact checks such as security headers and best‑practice configuration.
+                </p>
+              </li>
+            </ul>
+          </div>
+
+          <div class="command-card">
+            <h3 class="command-title" data-i18n="commands.vuln.title">Vulnerability‑focused</h3>
+            <ul class="command-list">
+              <li>
+                <span class="command-label">3 · SQL Injection</span>
+                <p class="command-text" data-i18n="commands.vuln.sqli">
+                  Test parameters for SQL injection issues using the dedicated SQLi scanner.
+                </p>
+              </li>
+              <li>
+                <span class="command-label">4 · XSS Scan</span>
+                <p class="command-text" data-i18n="commands.vuln.xss">
+                  Detect reflected and stored cross‑site scripting problems across forms and inputs.
+                </p>
+              </li>
+              <li>
+                <span class="command-label">10–13</span>
+                <p class="command-text" data-i18n="commands.vuln.misc">
+                  Command injection, path traversal, LFI/RFI, SSTI and more server‑side exploitation vectors.
+                </p>
+              </li>
+            </ul>
+          </div>
+
+          <div class="command-card">
+            <h3 class="command-title" data-i18n="commands.recon.title">Recon & advanced</h3>
+            <ul class="command-list">
+              <li>
+                <span class="command-label">5 · Port Scanning</span>
+                <p class="command-text" data-i18n="commands.recon.ports">
+                  Scan top ports of the target host and identify exposed services.
+                </p>
+              </li>
+              <li>
+                <span class="command-label">6 · Directory Bruteforce</span>
+                <p class="command-text" data-i18n="commands.recon.dirs">
+                  Discover hidden paths and files using wordlists and parallel requests.
+                </p>
+              </li>
+              <li>
+                <span class="command-label">17, 25–27</span>
+                <p class="command-text" data-i18n="commands.recon.api">
+                  Test APIs, GraphQL, NoSQL, request smuggling, WAF behavior, cache poisoning and more modern attack surfaces.
+                </p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Documentation (detailed) -->
+      <section id="docs" class="mt-16 border-t border-white/5 pt-10">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-semibold text-slate-50 sm:text-2xl" data-i18n="docs.title">Full documentation</h2>
+            <p class="mt-2 max-w-2xl text-sm text-slate-300" data-i18n="docs.subtitle">
+              Dive into the architecture, main components, and recommended workflows so you can safely integrate AegisScan into your daily security work.
+            </p>
+          </div>
+          <p class="rounded-full border border-white/10 bg-slate-900/70 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-slate-300" data-i18n="docs.badge">
+            Overview · Architecture · Modules · Best practices
+          </p>
+        </div>
+
+        <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
+          <!-- Docs sidebar -->
+          <aside class="docs-sidebar">
+            <div class="docs-sidebar-card">
+              <div class="flex items-center justify-between gap-3">
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400" data-i18n="docs.sidebar.title">Docs</p>
+                <a href="#docs" class="text-[11px] font-medium text-aegis-200 hover:text-white" data-i18n="docs.sidebar.top">Top</a>
+              </div>
+
+              <label class="mt-3 block">
+                <span class="sr-only" data-i18n="docs.search.label">Search docs</span>
+                <div class="relative">
+                  <input id="docsSearch" type="text" placeholder="Search (e.g. SQLi, proxy, report)…"
+                         class="w-full rounded-xl border border-white/10 bg-slate-900/70 px-3 py-2 pl-9 text-xs text-slate-100 placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-aegis-500"
+                         data-i18n-placeholder="docs.search.placeholder" />
+                  <svg class="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M9 15.5a6.5 6.5 0 1 1 0-13 6.5 6.5 0 0 1 0 13Z" stroke="currentColor" stroke-width="1.4"/>
+                    <path d="M14 14l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              </label>
+
+              <nav class="mt-4 space-y-1 text-xs" id="docsToc" aria-label="Documentation">
+                <a class="docs-toc-link" href="#docs-getting-started" data-doc-link="docs-getting-started" data-i18n="docs.toc.gettingStarted">Getting started</a>
+                <a class="docs-toc-link" href="#docs-cli" data-doc-link="docs-cli" data-i18n="docs.toc.cli">CLI & scan modes</a>
+                <a class="docs-toc-link" href="#docs-architecture" data-doc-link="docs-architecture" data-i18n="docs.toc.arch">Architecture</a>
+                <a class="docs-toc-link" href="#docs-modules" data-doc-link="docs-modules" data-i18n="docs.toc.modules">Modules</a>
+                <a class="docs-toc-link" href="#docs-reporting" data-doc-link="docs-reporting" data-i18n="docs.toc.reporting">Reporting</a>
+                <a class="docs-toc-link" href="#docs-safety" data-doc-link="docs-safety" data-i18n="docs.toc.safety">Safety & ethics</a>
+              </nav>
+
+              <div class="mt-4 rounded-xl border border-emerald-400/30 bg-emerald-500/10 p-3">
+                <p class="text-[11px] font-semibold text-emerald-200" data-i18n="docs.sidebar.tipTitle">Pro tip</p>
+                <p class="mt-1 text-xs leading-relaxed text-slate-200/90" data-i18n="docs.sidebar.tipBody">
+                  Start with passive/normal scans, then escalate to deep scanning only when scope and stability allow it.
+                </p>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Docs content -->
+          <div class="space-y-6">
+            <!-- Getting started -->
+            <section id="docs-getting-started" class="docs-section" data-doc-item>
+              <div class="docs-section-head">
+                <h3 class="docs-h3" data-i18n="docs.section.gettingStarted.title">Getting started</h3>
+                <p class="docs-lead" data-i18n="docs.section.gettingStarted.lead">
+                  A safe, repeatable way to run your first scans with clear outputs.
+                </p>
+              </div>
+
+              <div class="docs-grid">
+                <article class="docs-card">
+                  <h4 class="docs-h4" data-i18n="docs.section.gettingStarted.card1.title">Run the interactive launcher</h4>
+                  <p class="docs-p" data-i18n="docs.section.gettingStarted.card1.body">
+                    Use the hacker‑themed menu to choose a scan mode, enter a target URL, and let the launcher generate and run the correct Python runner.
+                  </p>
+                  <pre class="code-block"><code>chmod +x aegis.sh
+./aegis.sh</code></pre>
+                </article>
+
+                <article class="docs-card">
+                  <h4 class="docs-h4" data-i18n="docs.section.gettingStarted.card2.title">Run deep scan directly (Python)</h4>
+                  <p class="docs-p" data-i18n="docs.section.gettingStarted.card2.body">
+                    For automation or CI/CD, call the Python entrypoint and keep results in a dedicated output folder.
+                  </p>
+                  <pre class="code-block"><code>python3 main.py https://example.com \
+  --output my_scan</code></pre>
+                </article>
+              </div>
+
+              <div class="docs-callout docs-callout-indigo">
+                <p class="docs-callout-title" data-i18n="docs.callout.outputs.title">Where are results stored?</p>
+                <p class="docs-callout-text" data-i18n="docs.callout.outputs.body">
+                  Deep scans create an output directory like <code>scan_results_YYYYMMDD_HHMMSS</code> and write a consolidated <code>scan_summary.json</code> that’s easy to parse and report.
+                </p>
+              </div>
+            </section>
+
+            <!-- CLI -->
+            <section id="docs-cli" class="docs-section" data-doc-item>
+              <div class="docs-section-head">
+                <h3 class="docs-h3" data-i18n="docs.section.cli.title">CLI & scan modes</h3>
+                <p class="docs-lead" data-i18n="docs.section.cli.lead">
+                  Pick the right mode for the job: quick checks, focused retests, or full deep engagements.
+                </p>
+              </div>
+
+              <div class="docs-grid">
+                <article class="docs-card">
+                  <h4 class="docs-h4" data-i18n="docs.section.cli.card1.title">Deep Scan vs Normal Scan</h4>
+                  <ul class="docs-ul">
+                    <li data-i18n="docs.section.cli.card1.li1"><span class="font-semibold">Deep Scan</span>: maximum coverage, external tools enabled, deeper crawling.</li>
+                    <li data-i18n="docs.section.cli.card1.li2"><span class="font-semibold">Normal Scan</span>: faster, reduced depth, external tools disabled.</li>
+                    <li data-i18n="docs.section.cli.card1.li3">Use focused modules (SQLi/XSS/…) when you already know where to look.</li>
+                  </ul>
+                </article>
+
+                <article class="docs-card">
+                  <h4 class="docs-h4" data-i18n="docs.section.cli.card2.title">Proxy & TOR workflows</h4>
+                  <p class="docs-p" data-i18n="docs.section.cli.card2.body">
+                    Route requests through your proxy for debugging or through TOR where allowed by scope.
+                  </p>
+                  <pre class="code-block"><code>python3 main.py https://example.com --proxy http://127.0.0.1:8080
+python3 main.py https://example.com --tor</code></pre>
+                </article>
+              </div>
+            </section>
+
+            <!-- Architecture -->
+            <section id="docs-architecture" class="docs-section" data-doc-item>
+              <div class="docs-section-head">
+                <h3 class="docs-h3" data-i18n="docs.section.arch.title">Architecture</h3>
+                <p class="docs-lead" data-i18n="docs.section.arch.lead">
+                  Understand what runs under the hood so you can extend and trust the output.
+                </p>
+              </div>
+
+              <div class="docs-card">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <h4 class="docs-h4" data-i18n="docs.section.arch.card.title">Core pipeline</h4>
+                  <span class="docs-chip" data-i18n="docs.section.arch.card.chip">DeepScanner orchestration</span>
+                </div>
+                <div class="mt-3 grid gap-3 sm:grid-cols-2">
+                  <div class="docs-mini">
+                    <p class="docs-mini-title" data-i18n="docs.section.arch.m1.title">Async HTTP client</p>
+                    <p class="docs-mini-text" data-i18n="docs.section.arch.m1.body">Timeouts, redirects, TLS, UA, proxy/TOR.</p>
+                  </div>
+                  <div class="docs-mini">
+                    <p class="docs-mini-title" data-i18n="docs.section.arch.m2.title">Crawler & discovery</p>
+                    <p class="docs-mini-text" data-i18n="docs.section.arch.m2.body">Links, forms, endpoints, JS files, inputs.</p>
+                  </div>
+                  <div class="docs-mini">
+                    <p class="docs-mini-title" data-i18n="docs.section.arch.m3.title">Scanners</p>
+                    <p class="docs-mini-text" data-i18n="docs.section.arch.m3.body">SQLi, XSS, auth, SSRF, uploads, …</p>
+                  </div>
+                  <div class="docs-mini">
+                    <p class="docs-mini-title" data-i18n="docs.section.arch.m4.title">Aggregation & export</p>
+                    <p class="docs-mini-text" data-i18n="docs.section.arch.m4.body">Normalized findings → JSON reports.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Modules -->
+            <section id="docs-modules" class="docs-section" data-doc-item>
+              <div class="docs-section-head">
+                <h3 class="docs-h3" data-i18n="docs.section.modules.title">Modules</h3>
+                <p class="docs-lead" data-i18n="docs.section.modules.lead">
+                  AegisScan provides specialized scanners and recon modules you can run independently or as part of deep scans.
+                </p>
+              </div>
+
+              <div class="docs-grid">
+                <article class="docs-card">
+                  <h4 class="docs-h4" data-i18n="docs.section.modules.card1.title">Vulnerability scanners</h4>
+                  <p class="docs-p" data-i18n="docs.section.modules.card1.body">
+                    SQLi, XSS, command injection, traversal, LFI/RFI, SSTI, CSRF, open redirect, auth/session, JWT, file upload, SSRF, XXE, IDOR…
+                  </p>
+                  <div class="docs-tags">
+                    <span class="docs-tag">SQLi</span><span class="docs-tag">XSS</span><span class="docs-tag">SSRF</span><span class="docs-tag">JWT</span><span class="docs-tag">SSTI</span>
+                  </div>
+                </article>
+
+                <article class="docs-card">
+                  <h4 class="docs-h4" data-i18n="docs.section.modules.card2.title">Recon modules</h4>
+                  <p class="docs-p" data-i18n="docs.section.modules.card2.body">
+                    Port scanning, directory discovery, subdomain enumeration, takeover detection, service testing, passive analysis.
+                  </p>
+                  <div class="docs-tags">
+                    <span class="docs-tag">Ports</span><span class="docs-tag">Dirs</span><span class="docs-tag">Subdomains</span><span class="docs-tag">Passive</span>
+                  </div>
+                </article>
+              </div>
+
+              <div class="docs-callout docs-callout-emerald">
+                <p class="docs-callout-title" data-i18n="docs.callout.extend.title">Extending AegisScan</p>
+                <p class="docs-callout-text" data-i18n="docs.callout.extend.body">
+                  Add new scanner modules in Python, keep the same result schema, then wire a new menu entry in <code>aegis.sh</code> for a consistent workflow.
+                </p>
+              </div>
+            </section>
+
+            <!-- Reporting -->
+            <section id="docs-reporting" class="docs-section" data-doc-item>
+              <div class="docs-section-head">
+                <h3 class="docs-h3" data-i18n="docs.section.reporting.title">Reporting</h3>
+                <p class="docs-lead" data-i18n="docs.section.reporting.lead">
+                  Turn findings into actionable reports with severity and evidence.
+                </p>
+              </div>
+
+              <div class="docs-card">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <h4 class="docs-h4" data-i18n="docs.section.reporting.card.title">scan_summary.json structure</h4>
+                  <span class="docs-chip" data-i18n="docs.section.reporting.card.chip">Machine‑readable</span>
+                </div>
+                <ul class="docs-ul mt-3">
+                  <li data-i18n="docs.section.reporting.li1"><span class="font-semibold">discovery</span>: URLs/forms/endpoints/JS/inputs/ports/directories.</li>
+                  <li data-i18n="docs.section.reporting.li2"><span class="font-semibold">vulnerabilities</span>: by_severity, by_type, total + details.</li>
+                  <li data-i18n="docs.section.reporting.li3"><span class="font-semibold">external_tools</span>: which tools were used.</li>
+                </ul>
+              </div>
+            </section>
+
+            <!-- Safety -->
+            <section id="docs-safety" class="docs-section" data-doc-item>
+              <div class="docs-section-head">
+                <h3 class="docs-h3" data-i18n="docs.section.safety.title">Safety & ethics</h3>
+                <p class="docs-lead" data-i18n="docs.section.safety.lead">
+                  Scan responsibly: permission, scope, and impact controls are non‑negotiable.
+                </p>
+              </div>
+
+              <div class="docs-callout docs-callout-rose">
+                <p class="docs-callout-title" data-i18n="docs.callout.legal.title">Legal notice</p>
+                <p class="docs-callout-text" data-i18n="docs.callout.legal.body">
+                  Only test assets you own or have explicit written authorization to assess. If you’re unsure, don’t scan.
+                </p>
+              </div>
+
+              <div class="docs-card">
+                <h4 class="docs-h4" data-i18n="docs.section.safety.card.title">Operational checklist</h4>
+                <ul class="docs-ul mt-3">
+                  <li data-i18n="docs.section.safety.li1">Start passive → normal → deep (escalate carefully).</li>
+                  <li data-i18n="docs.section.safety.li2">Use rate limits and timeouts appropriate for the target.</li>
+                  <li data-i18n="docs.section.safety.li3">Correlate automated findings with manual validation.</li>
+                </ul>
+              </div>
+            </section>
+
+            <div class="rounded-2xl border border-white/10 bg-slate-950/60 p-4 text-xs text-slate-300">
+              <p data-i18n="docs.footer.note">
+                Want a printable version? You can export <code>scan_summary.json</code> and generate a report template from it.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq" class="mt-16 border-t border-white/5 pt-10">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-semibold text-slate-50 sm:text-2xl" data-i18n="faq.title">Frequently asked questions</h2>
+            <p class="mt-2 max-w-2xl text-sm text-slate-300" data-i18n="faq.subtitle">
+              A few important points before you start scanning with AegisScan.
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+          <div class="rounded-2xl border border-white/10 bg-slate-950/70 p-4 shadow-xl">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400" data-i18n="faq.panel.title">Quick answers</p>
+            <p class="mt-2 text-sm text-slate-200" data-i18n="faq.panel.body">
+              Click a question to expand the answer. For legal/scope questions, always follow your contract and local laws.
+            </p>
+            <div class="mt-4 rounded-xl border border-white/10 bg-slate-900/70 p-3 text-xs text-slate-300">
+              <p class="font-semibold text-slate-100" data-i18n="faq.panel.highlightTitle">Most important rule</p>
+              <p class="mt-1" data-i18n="faq.panel.highlightBody">No permission → no scanning.</p>
+            </div>
+          </div>
+
+          <div class="space-y-3" id="faqAccordion">
+            <div class="faq-acc-item">
+              <button class="faq-acc-btn" type="button" aria-expanded="false">
+                <span class="faq-acc-q" data-i18n="faq.q1">Is AegisScan legal to use?</span>
+                <span class="faq-acc-icon" aria-hidden="true"></span>
+              </button>
+              <div class="faq-acc-panel" hidden>
+                <p class="faq-acc-a" data-i18n="faq.a1">
+                  Yes, but only on assets you own or where you have explicit written permission. Unauthorized testing can be illegal and unethical.
+                </p>
+              </div>
+            </div>
+
+            <div class="faq-acc-item">
+              <button class="faq-acc-btn" type="button" aria-expanded="false">
+                <span class="faq-acc-q" data-i18n="faq.q2">What platforms are supported?</span>
+                <span class="faq-acc-icon" aria-hidden="true"></span>
+              </button>
+              <div class="faq-acc-panel" hidden>
+                <p class="faq-acc-a" data-i18n="faq.a2">
+                  AegisScan is built around Python 3 and Bash, and works well on Linux and macOS. On Windows you can use WSL or a compatible environment to run the Bash launcher.
+                </p>
+              </div>
+            </div>
+
+            <div class="faq-acc-item">
+              <button class="faq-acc-btn" type="button" aria-expanded="false">
+                <span class="faq-acc-q" data-i18n="faq.q3">How do I customize wordlists or modules?</span>
+                <span class="faq-acc-icon" aria-hidden="true"></span>
+              </button>
+              <div class="faq-acc-panel" hidden>
+                <p class="faq-acc-a" data-i18n="faq.a3">
+                  The project structure separates scanners, recon modules, and utilities. You can extend or swap wordlists, add new scanners, or modify existing ones while still using the same interactive CLI.
+                </p>
+              </div>
+            </div>
+
+            <div class="faq-acc-item">
+              <button class="faq-acc-btn" type="button" aria-expanded="false">
+                <span class="faq-acc-q" data-i18n="faq.q4">Can I integrate AegisScan into CI/CD?</span>
+                <span class="faq-acc-icon" aria-hidden="true"></span>
+              </button>
+              <div class="faq-acc-panel" hidden>
+                <p class="faq-acc-a" data-i18n="faq.a4">
+                  Yes. Call the Python entrypoints or specific scanner modules directly from your pipelines, export JSON reports, and fail builds based on severity thresholds.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="mt-8 text-[11px] text-slate-500" data-i18n="footer.note">
+          AegisScan is a security research tool. Always follow your local laws and responsible disclosure practices.
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <!-- Inlined script from main.js -->
+  <script>
+// Simple multi-language + docs UX
+
+const translations = {
+  en: {
+    'brand.badge': 'Security',
+    'brand.tagline': 'Advanced Web Security Scanner',
+    'nav.overview': 'Overview',
+    'nav.features': 'Features',
+    'nav.tutorial': 'Tutorial',
+    'nav.commands': 'CLI Modes',
+    'nav.faq': 'FAQ',
+    'cta.primary': 'Get Started',
+    'hero.badge': 'Offensive Security Toolkit',
+    'hero.title': 'Deep web security scanning for serious pentesters.',
+    'hero.subtitle':
+      'AegisScan combines advanced crawling, vulnerability scanners, recon modules, and external tools into a single hacker‑themed CLI for deep testing of modern web applications and APIs.',
+    'hero.ctaPrimary': 'Run your first scan',
+    'hero.ctaSecondary': 'Explore capabilities',
+    'hero.stats.targetsLabel': 'Targets',
+    'hero.stats.targetsValue': 'Web apps, APIs, microservices',
+    'hero.stats.modesLabel': 'Scan Modes',
+    'hero.stats.modesValue': 'Deep, SQLi, XSS, API & more',
+    'hero.disclaimer':
+      'Use AegisScan only on systems you explicitly own or have written permission to test.',
+    'terminal.banner':
+      '▌ AegisScan v1.0 – Advanced Web Security Testing Framework',
+    'terminal.menu':
+      '[1] Deep Scan · [2] Normal Scan · [3] SQLi · [4] XSS · [5] Ports · [6] Directories · [7] Subdomains · …',
+    'terminal.example':
+      'Select <span class="text-emerald-300">1</span> and enter a target like <span class="text-sky-300">https://example.com</span> to perform a full deep scan.',
+    'features.title': 'Why AegisScan?',
+    'features.subtitle':
+      'AegisScan is built for modern offensive security workflows: from deep crawling and recon to focused vulnerability testing and reporting.',
+    'features.badge':
+      'DeepScanner core · Async HTTP client · External tools integration',
+    'features.deepScan.title': 'Deep scanning engine',
+    'features.deepScan.body':
+      'Crawl links, forms, endpoints, JavaScript files, inputs, ports, and directories with the async DeepScanner and consolidated JSON summaries.',
+    'features.deepScan.item1': 'Configurable depth and page limits',
+    'features.deepScan.item2': 'Open ports & discovered directories overview',
+    'features.deepScan.item3': 'Exportable scan_summary.json reports',
+    'features.vulnCoverage.title': 'Wide vulnerability coverage',
+    'features.vulnCoverage.body':
+      'Switch between focused scanners: SQLi, XSS, command injection, path traversal, LFI/RFI, SSTI, CSRF, auth/session, JWT, file uploads, and more.',
+    'features.vulnCoverage.item1': 'OWASP Top 10 & beyond',
+    'features.vulnCoverage.item2': 'Per‑severity and per‑type statistics',
+    'features.vulnCoverage.item3':
+      'Detailed findings with payloads & evidence',
+    'features.recon.title': 'Recon & automation',
+    'features.recon.body':
+      'Enumerate subdomains, brute‑force directories, scan top ports, analyze security headers, and chain scans with an interactive Bash launcher.',
+    'features.recon.item1': 'Subdomain & takeover detection modules',
+    'features.recon.item2': 'Enhanced port scanning & service testing',
+    'features.recon.item3': 'API, GraphQL, NoSQL & WebSocket coverage',
+    'tutorial.title': 'Step‑by‑step usage guide',
+    'tutorial.subtitle':
+      'Follow these steps to install dependencies, launch the interactive menu, and run deep or focused scans against your targets.',
+    'tutorial.badge': 'Quickstart · CLI based',
+    'tutorial.step1.title': 'Clone & prepare the project',
+    'tutorial.step1.body':
+      'Clone the repository to your system and ensure you have Python 3, Bash, and required security tools installed. AegisScan runs from the project root.',
+    'tutorial.step2.title': 'Make the launcher executable',
+    'tutorial.step2.body':
+      'The `aegis.sh` script provides a hacker‑style interactive menu that generates and runs the appropriate Python scan script for you.',
+    'tutorial.step3.title': 'Choose a scan mode',
+    'tutorial.step3.body':
+      'From the main menu select a scan: deep scan (1), normal scan (2), or a focused module such as SQLi (3), XSS (4), port scanning (5), directory brute‑force (6), subdomains (7), and many more.',
+    'tutorial.step4.title': 'Enter the target URL',
+    'tutorial.step4.body':
+      'Provide the full target URL. If you omit the scheme, AegisScan will automatically prepend <code>http://</code> and warn you, so you always know exactly what is being scanned.',
+    'tutorial.step5.title': 'Review results & JSON report',
+    'tutorial.step5.body':
+      'Scan output shows discovered URLs, forms, ports, directories, and a breakdown of vulnerabilities by severity and type. Detailed data is stored in an output directory such as <code>scan_results_YYYYMMDD_HHMMSS</code> with <code>scan_summary.json</code> for further analysis.',
+    'tutorial.altTitle': 'Direct Python deep scan',
+    'tutorial.altBody':
+      'You can also run the deep scanner directly via the Python entrypoint defined in <code>main.py</code>.',
+    'tutorial.altItem1':
+      'Deep crawling with async HTTP client and TLS verification',
+    'tutorial.altItem2':
+      'Summaries grouped by severity and vulnerability type',
+    'tutorial.altItem3':
+      'Ports, directories, and external tools all in one report',
+    'commands.title': 'Interactive menu commands',
+    'commands.subtitle':
+      'The launcher presents over 30 scan options; here are some of the most important ones and when to use them.',
+    'commands.core.title': 'Core scans',
+    'commands.core.deep':
+      'Full discovery, multi‑module vulnerability scan, external tools enabled — ideal for full engagements.',
+    'commands.core.normal':
+      'Faster scan with reduced depth and no external tools; good for quick assessments.',
+    'commands.core.passive':
+      'No‑impact checks such as security headers and best‑practice configuration.',
+    'commands.vuln.title': 'Vulnerability‑focused',
+    'commands.vuln.sqli':
+      'Test parameters for SQL injection issues using the dedicated SQLi scanner.',
+    'commands.vuln.xss':
+      'Detect reflected and stored cross‑site scripting problems across forms and inputs.',
+    'commands.vuln.misc':
+      'Command injection, path traversal, LFI/RFI, SSTI and more server‑side exploitation vectors.',
+    'commands.recon.title': 'Recon & advanced',
+    'commands.recon.ports':
+      'Scan top ports of the target host and identify exposed services.',
+    'commands.recon.dirs':
+      'Discover hidden paths and files using wordlists and parallel requests.',
+    'commands.recon.api':
+      'Test APIs, GraphQL, NoSQL, request smuggling, WAF behavior, cache poisoning and more modern attack surfaces.',
+    'docs.title': 'Full documentation',
+    'docs.subtitle':
+      'Dive into the architecture, main components, and recommended workflows so you can safely integrate AegisScan into your daily security work.',
+    'docs.badge': 'Overview · Architecture · Modules · Best practices',
+    'docs.sidebar.title': 'Docs',
+    'docs.sidebar.top': 'Top',
+    'docs.search.placeholder': 'Search (e.g. SQLi, proxy, report)…',
+    'docs.toc.gettingStarted': 'Getting started',
+    'docs.toc.cli': 'CLI & scan modes',
+    'docs.toc.arch': 'Architecture',
+    'docs.toc.modules': 'Modules',
+    'docs.toc.reporting': 'Reporting',
+    'docs.toc.safety': 'Safety & ethics',
+    'docs.sidebar.tipTitle': 'Pro tip',
+    'docs.sidebar.tipBody':
+      'Start with passive/normal scans, then escalate to deep scanning only when scope and stability allow it.',
+    'docs.section.gettingStarted.title': 'Getting started',
+    'docs.section.gettingStarted.lead':
+      'A safe, repeatable way to run your first scans with clear outputs.',
+    'docs.section.gettingStarted.card1.title': 'Run the interactive launcher',
+    'docs.section.gettingStarted.card1.body':
+      'Use the hacker‑themed menu to choose a scan mode, enter a target URL, and let the launcher generate and run the correct Python runner.',
+    'docs.section.gettingStarted.card2.title':
+      'Run deep scan directly (Python)',
+    'docs.section.gettingStarted.card2.body':
+      'For automation or CI/CD, call the Python entrypoint and keep results in a dedicated output folder.',
+    'docs.callout.outputs.title': 'Where are results stored?',
+    'docs.callout.outputs.body':
+      'Deep scans create an output directory like <code>scan_results_YYYYMMDD_HHMMSS</code> and write a consolidated <code>scan_summary.json</code> that’s easy to parse and report.',
+    'docs.section.cli.title': 'CLI & scan modes',
+    'docs.section.cli.lead':
+      'Pick the right mode for the job: quick checks, focused retests, or full deep engagements.',
+    'docs.section.cli.card1.title': 'Deep Scan vs Normal Scan',
+    'docs.section.cli.card1.li1':
+      '<span class="font-semibold">Deep Scan</span>: maximum coverage, external tools enabled, deeper crawling.',
+    'docs.section.cli.card1.li2':
+      '<span class="font-semibold">Normal Scan</span>: faster, reduced depth, external tools disabled.',
+    'docs.section.cli.card1.li3':
+      'Use focused modules (SQLi/XSS/…) when you already know where to look.',
+    'docs.section.cli.card2.title': 'Proxy & TOR workflows',
+    'docs.section.cli.card2.body':
+      'Route requests through your proxy for debugging or through TOR where allowed by scope.',
+    'docs.section.arch.title': 'Architecture',
+    'docs.section.arch.lead':
+      'Understand what runs under the hood so you can extend and trust the output.',
+    'docs.section.arch.card.title': 'Core pipeline',
+    'docs.section.arch.card.chip': 'DeepScanner orchestration',
+    'docs.section.arch.m1.title': 'Async HTTP client',
+    'docs.section.arch.m1.body': 'Timeouts, redirects, TLS, UA, proxy/TOR.',
+    'docs.section.arch.m2.title': 'Crawler & discovery',
+    'docs.section.arch.m2.body': 'Links, forms, endpoints, JS files, inputs.',
+    'docs.section.arch.m3.title': 'Scanners',
+    'docs.section.arch.m3.body': 'SQLi, XSS, auth, SSRF, uploads, …',
+    'docs.section.arch.m4.title': 'Aggregation & export',
+    'docs.section.arch.m4.body': 'Normalized findings → JSON reports.',
+    'docs.section.modules.title': 'Modules',
+    'docs.section.modules.lead':
+      'AegisScan provides specialized scanners and recon modules you can run independently or as part of deep scans.',
+    'docs.section.modules.card1.title': 'Vulnerability scanners',
+    'docs.section.modules.card1.body':
+      'SQLi, XSS, command injection, traversal, LFI/RFI, SSTI, CSRF, open redirect, auth/session, JWT, file upload, SSRF, XXE, IDOR…',
+    'docs.section.modules.card2.title': 'Recon modules',
+    'docs.section.modules.card2.body':
+      'Port scanning, directory discovery, subdomain enumeration, takeover detection, service testing, passive analysis.',
+    'docs.callout.extend.title': 'Extending AegisScan',
+    'docs.callout.extend.body':
+      'Add new scanner modules in Python, keep the same result schema, then wire a new menu entry in <code>aegis.sh</code> for a consistent workflow.',
+    'docs.section.reporting.title': 'Reporting',
+    'docs.section.reporting.lead':
+      'Turn findings into actionable reports with severity and evidence.',
+    'docs.section.reporting.card.title': 'scan_summary.json structure',
+    'docs.section.reporting.card.chip': 'Machine‑readable',
+    'docs.section.reporting.li1':
+      '<span class="font-semibold">discovery</span>: URLs/forms/endpoints/JS/inputs/ports/directories.',
+    'docs.section.reporting.li2':
+      '<span class="font-semibold">vulnerabilities</span>: by_severity, by_type, total + details.',
+    'docs.section.reporting.li3':
+      '<span class="font-semibold">external_tools</span>: which tools were used.',
+    'docs.section.safety.title': 'Safety & ethics',
+    'docs.section.safety.lead':
+      'Scan responsibly: permission, scope, and impact controls are non‑negotiable.',
+    'docs.callout.legal.title': 'Legal notice',
+    'docs.callout.legal.body':
+      'Only test assets you own or have explicit written authorization to assess. If you’re unsure, don’t scan.',
+    'docs.section.safety.card.title': 'Operational checklist',
+    'docs.section.safety.li1': 'Start passive → normal → deep (escalate carefully).',
+    'docs.section.safety.li2': 'Use rate limits and timeouts appropriate for the target.',
+    'docs.section.safety.li3': 'Correlate automated findings with manual validation.',
+    'docs.footer.note':
+      'Want a printable version? You can export <code>scan_summary.json</code> and generate a report template from it.',
+    'faq.panel.title': 'Quick answers',
+    'faq.panel.body':
+      'Click a question to expand the answer. For legal/scope questions, always follow your contract and local laws.',
+    'faq.panel.highlightTitle': 'Most important rule',
+    'faq.panel.highlightBody': 'No permission → no scanning.',
+    'docs.tab.overview': 'Overview',
+    'docs.tab.architecture': 'Architecture',
+    'docs.tab.modules': 'Modules',
+    'docs.tab.best': 'Best practices',
+    'docs.overview.p1':
+      'AegisScan is a Python‑based web security framework that orchestrates crawlers, scanners, recon modules, and external tools from a single CLI interface.',
+    'docs.overview.p2':
+      'The Bash launcher (`aegis.sh`) acts as a comfortable front‑end: you choose a scan type from a rich, hacker‑style menu and it generates a dedicated Python runner with the correct configuration.',
+    'docs.overview.item1':
+      'Use deep scans for full engagements and mapping new targets.',
+    'docs.overview.item2':
+      'Use focused modules when retesting specific vulnerabilities.',
+    'docs.overview.item3':
+      'Export JSON results to feed dashboards, reports, or CI/CD pipelines.',
+    'docs.arch.p1':
+      'At the core, the `DeepScanner` coordinates an async HTTP client, crawlers, scanners, and result aggregation to build a complete picture of your target.',
+    'docs.arch.item1':
+      'HTTP client: centralizes timeouts, redirects, TLS options, user‑agents, and optional proxy/TOR settings.',
+    'docs.arch.item2':
+      'Scanners: independent modules such as SQLi, XSS, command injection, LFI/RFI, SSTI, CSRF, auth/session and more.',
+    'docs.arch.item3':
+      'Recon: port scans, subdomains, directories, service testing, and passive analyzers.',
+    'docs.arch.p2':
+      'Results are normalized into Python objects and then serialized to JSON, so you can post‑process them without touching the scanner internals.',
+    'docs.modules.p1':
+      'Each menu option in `aegis.sh` maps to a concrete scanner, recon module, or composite workflow that lives in the `aegisscan` package.',
+    'docs.modules.item1':
+      'Vulnerability scanners: SQLi, XSS, command injection, path traversal, LFI/RFI, SSTI, CSRF, open redirect, JWT, file upload, OAuth/OIDC, LDAP injection and more.',
+    'docs.modules.item2':
+      'Recon modules: enhanced port scanner, directory bruteforcer, subdomain enumerator, subdomain takeover detector, service tester.',
+    'docs.modules.item3':
+      'Special modules: API and GraphQL testers, NoSQL injection, HTTP request smuggling, WAF detection & bypass, cache poisoning, clickjacking.',
+    'docs.modules.p2':
+      'You can extend the toolkit by adding new Python modules that follow the same interface and then wiring them into the launcher menu.',
+    'docs.best.p1':
+      'Use AegisScan responsibly and methodically: start small, log everything, and respect the limits of the systems you test.',
+    'docs.best.item1':
+      'Always obtain written permission before scanning and align intensity with your scope of work.',
+    'docs.best.item2':
+      'Begin with passive and normal scans, then escalate to deep and high‑impact modules if needed.',
+    'docs.best.item3':
+      'Version‑control your scan configurations and keep `scan_summary.json` files with your engagement notes.',
+    'docs.best.item4':
+      'Correlate AegisScan findings with manual testing and other tools instead of relying on any single source.',
+    'docs.best.p2':
+      'Combine AegisScan with proper reporting templates and responsible disclosure policies to deliver high‑quality, repeatable security work.',
+    'faq.title': 'Frequently asked questions',
+    'faq.subtitle':
+      'A few important points before you start scanning with AegisScan.',
+    'faq.q1': 'Is AegisScan legal to use?',
+    'faq.a1':
+      'Yes, but only on assets you own or where you have explicit written permission. Unauthorized testing can be illegal and unethical.',
+    'faq.q2': 'What platforms are supported?',
+    'faq.a2':
+      'AegisScan is built around Python 3 and Bash, and works well on Linux and macOS. On Windows you can use WSL or a compatible environment to run the Bash launcher.',
+    'faq.q3': 'How do I customize wordlists or modules?',
+    'faq.a3':
+      'The project structure separates scanners, recon modules, and utilities. You can extend or swap wordlists, add new scanners, or modify existing ones while still using the same interactive CLI.',
+    'faq.q4': 'Can I integrate AegisScan into CI/CD?',
+    'faq.a4':
+      'Yes. Call the Python entrypoints or specific scanner modules directly from your pipelines, export JSON reports, and fail builds based on severity thresholds.',
+    'footer.note':
+      'AegisScan is a security research tool. Always follow your local laws and responsible disclosure practices.',
+  },
+  fa: {
+    'brand.badge': 'امنیت',
+    'brand.tagline': 'فریم‌ورک پیشرفته اسکن امنیت وب',
+    'nav.overview': 'معرفی',
+    'nav.features': 'قابلیت‌ها',
+    'nav.tutorial': 'آموزش سریع',
+    'nav.commands': 'حالت‌های CLI',
+    'nav.faq': 'سؤالات متداول',
+    'cta.primary': 'شروع استفاده',
+    'hero.badge': 'جعبه‌ابزار امنیت تهاجمی',
+    'hero.title': 'اسکن عمیق امنیت وب برای پنتسترهای جدی.',
+    'hero.subtitle':
+      'AegisScan با کراول پیشرفته، اسکنرهای آسیب‌پذیری، ماژول‌های شناسایی و ادغام ابزارهای خارجی، یک CLI با تم هکری برای تست عمیق اپلیکیشن‌های وب و APIها در اختیار شما می‌گذارد.',
+    'hero.ctaPrimary': 'اولین اسکن را اجرا کن',
+    'hero.ctaSecondary': 'دیدن قابلیت‌ها',
+    'hero.stats.targetsLabel': 'هدف‌ها',
+    'hero.stats.targetsValue': 'وب‌اپ، API، مایکروسرویس',
+    'hero.stats.modesLabel': 'حالت‌های اسکن',
+    'hero.stats.modesValue': 'Deep، SQLi، XSS، API و بیشتر',
+    'hero.disclaimer':
+      'از AegisScan فقط روی سیستم‌هایی استفاده کن که مالک آن هستی یا مجوز کتبی برای تست داری.',
+    'terminal.banner':
+      '▌ AegisScan v1.0 – فریم‌ورک پیشرفته تست امنیت وب',
+    'terminal.menu':
+      '[1] Deep Scan · [2] Normal Scan · [3] SQLi · [4] XSS · [5] Ports · [6] Directories · [7] Subdomains · …',
+    'terminal.example':
+      'گزینه <span class="text-emerald-300">1</span> را بزن و یک هدف مثل <span class="text-sky-300">https://example.com</span> وارد کن تا یک دیپ‌اسکن کامل انجام شود.',
+    'features.title': 'چرا AegisScan؟',
+    'features.subtitle':
+      'AegisScan برای سناریوهای مدرن امنیت تهاجمی طراحی شده؛ از کراول عمیق و شناسایی تا اسکن متمرکز و گزارش‌گیری.',
+    'features.badge':
+      'هسته DeepScanner · HTTP Client غیرهمزمان · ادغام ابزارهای خارجی',
+    'features.deepScan.title': 'موتور اسکن عمیق',
+    'features.deepScan.body':
+      'با DeepScanner لینک‌ها، فرم‌ها، اندپوینت‌ها، فایل‌های JS، ورودی‌ها، پورت‌ها و دایرکتوری‌ها را کراول کن و خلاصه نهایی را به شکل JSON بگیر.',
+    'features.deepScan.item1': 'عمق و تعداد صفحات قابل تنظیم',
+    'features.deepScan.item2': 'نمای کلی پورت‌های باز و دایرکتوری‌ها',
+    'features.deepScan.item3': 'گزارش‌های قابل خروجی در فایل scan_summary.json',
+    'features.vulnCoverage.title': 'پوشش وسیع آسیب‌پذیری',
+    'features.vulnCoverage.body':
+      'بین اسکنرهای متمرکز جابه‌جا شو: SQLi، XSS، Command Injection، Path Traversal، LFI/RFI، SSTI، CSRF، احراز هویت و سشن، JWT، آپلود فایل و موارد دیگر.',
+    'features.vulnCoverage.item1': 'پوشش OWASP Top 10 و فراتر',
+    'features.vulnCoverage.item2': 'آمار بر اساس شدت و نوع آسیب‌پذیری',
+    'features.vulnCoverage.item3':
+      'جزئیات کامل بهمراه payload و شواهد',
+    'features.recon.title': 'شناسایی و اتوماسیون',
+    'features.recon.body':
+      'ساب‌دومین‌ها را لیست کن، دایرکتوری‌ها را بروت‌فورس کن، پورت‌ها را اسکن کن، هدرهای امنیتی را بررسی کن و همه را با یک لانچر تعاملی بچسبان.',
+    'features.recon.item1': 'ماژول‌های شناسایی ساب‌دومین و takeover',
+    'features.recon.item2': 'اسکن پورت و تست سرویس پیشرفته',
+    'features.recon.item3': 'پوشش API، GraphQL، NoSQL و WebSocket',
+    'tutorial.title': 'راهنمای گام‌به‌گام',
+    'tutorial.subtitle':
+      'این مراحل را دنبال کن تا وابستگی‌ها را نصب کنی، منوی تعاملی را بالا بیاوری و اسکن‌های عمیق یا متمرکز را روی هدف اجرا کنی.',
+    'tutorial.badge': 'شروع سریع · مبتنی بر CLI',
+    'tutorial.step1.title': 'کلون و آماده‌سازی پروژه',
+    'tutorial.step1.body':
+      'مخزن را روی سیستم خودت کلون کن و مطمئن شو Python 3، Bash و ابزارهای امنیتی لازم را نصب داری. AegisScan از ریشه پروژه اجرا می‌شود.',
+    'tutorial.step2.title': 'قابل اجرا کردن لانچر',
+    'tutorial.step2.body':
+      'اسکریپت `aegis.sh` یک منوی تعاملی با تم هکری نمایش می‌دهد که برایت اسکریپت پایتون مناسب هر نوع اسکن را تولید و اجرا می‌کند.',
+    'tutorial.step3.title': 'انتخاب حالت اسکن',
+    'tutorial.step3.body':
+      'از منوی اصلی یکی از اسکن‌ها را انتخاب کن: Deep Scan (۱)، Normal Scan (۲) یا ماژول‌های متمرکز مثل SQLi (۳)، XSS (۴)، اسکن پورت (۵)، بروت‌فورس دایرکتوری (۶)، ساب‌دومین (۷) و بقیه.',
+    'tutorial.step4.title': 'وارد کردن URL هدف',
+    'tutorial.step4.body':
+      'آدرس کامل هدف را وارد کن. اگر scheme را ننویسی، AegisScan به‌صورت خودکار `http://` را اضافه می‌کند و بهت هشدار می‌دهد تا دقیقاً بدانی چه چیزی اسکن می‌شود.',
+    'tutorial.step5.title': 'بررسی نتایج و گزارش JSON',
+    'tutorial.step5.body':
+      'خروجی اسکن شامل URLها، فرم‌ها، پورت‌ها، دایرکتوری‌ها و خلاصه آسیب‌پذیری‌ها بر اساس شدت و نوع است. جزئیات در فولدری مثل <code>scan_results_YYYYMMDD_HHMMSS</code> و فایل <code>scan_summary.json</code> ذخیره می‌شود.',
+    'tutorial.altTitle': 'اجرای مستقیم Deep Scan با پایتون',
+    'tutorial.altBody':
+      'می‌توانی DeepScanner را مستقیماً با entrypoint تعریف شده در <code>main.py</code> اجرا کنی.',
+    'tutorial.altItem1':
+      'کراول عمیق با HTTP Client غیرهمزمان و TLS',
+    'tutorial.altItem2':
+      'خلاصه نتایج گروه‌بندی‌شده بر اساس شدت و نوع',
+    'tutorial.altItem3':
+      'پورت‌ها، دایرکتوری‌ها و ابزارهای خارجی در یک گزارش واحد',
+    'commands.title': 'اوامر منوی تعاملی',
+    'commands.subtitle':
+      'لانچر بیشتر از ۳۰ گزینه اسکن دارد؛ اینجا مهم‌ترین‌ها و سناریوهای استفاده‌شان را می‌بینی.',
+    'commands.core.title': 'اسکن‌های اصلی',
+    'commands.core.deep':
+      'کشف کامل، اسکن چندماژوله با ابزارهای خارجی؛ مناسب برای ارزیابی‌های کامل.',
+    'commands.core.normal':
+      'اسکن سریع‌تر با عمق کمتر و بدون ابزار خارجی؛ مناسب چک‌های دوره‌ای.',
+    'commands.core.passive':
+      'چک‌های بدون تاثیر مانند هدرهای امنیتی و کانفیگ‌های Best Practice.',
+    'commands.vuln.title': 'ماژول‌های آسیب‌پذیری',
+    'commands.vuln.sqli':
+      'تست پارامترها از نظر SQL Injection با اسکنر اختصاصی.',
+    'commands.vuln.xss':
+      'شناسایی XSS بازتابی و ذخیره‌شده روی فرم‌ها و ورودی‌ها.',
+    'commands.vuln.misc':
+      'Command Injection، Path Traversal، LFI/RFI، SSTI و بقیه بردارهای سمت سرور.',
+    'commands.recon.title': 'شناسایی و پیشرفته',
+    'commands.recon.ports':
+      'اسکن پورت‌های رایج روی هاست هدف و شناسایی سرویس‌ها.',
+    'commands.recon.dirs':
+      'کشف مسیرها و فایل‌های مخفی با wordlist و درخواست‌های موازی.',
+    'commands.recon.api':
+      'تست API و GraphQL و NoSQL، Request Smuggling، رفتار WAF، Cache Poisoning و سرفصل‌های مدرن دیگر.',
+    'docs.title': 'داکیومنت کامل',
+    'docs.subtitle':
+      'معماری، اجزا و ورک‌فلوهای پیشنهادی را ببین تا بتوانی AegisScan را ایمن و حرفه‌ای وارد کار روزمره خودت کنی.',
+    'docs.badge': 'Overview · معماری · ماژول‌ها · Best Practice',
+    'docs.sidebar.title': 'داکیومنت',
+    'docs.sidebar.top': 'بالا',
+    'docs.search.placeholder': 'جستجو (مثلاً SQLi، proxy، report)…',
+    'docs.toc.gettingStarted': 'شروع سریع',
+    'docs.toc.cli': 'CLI و مودها',
+    'docs.toc.arch': 'معماری',
+    'docs.toc.modules': 'ماژول‌ها',
+    'docs.toc.reporting': 'گزارش‌گیری',
+    'docs.toc.safety': 'ایمنی و اخلاق',
+    'docs.sidebar.tipTitle': 'نکته حرفه‌ای',
+    'docs.sidebar.tipBody':
+      'اول Passive/Normal را اجرا کن و فقط وقتی scope و پایداری سیستم اجازه می‌دهد سراغ Deep Scan برو.',
+    'docs.section.gettingStarted.title': 'شروع سریع',
+    'docs.section.gettingStarted.lead':
+      'یک مسیر امن و تکرارپذیر برای اجرای اولین اسکن‌ها با خروجی شفاف.',
+    'docs.section.gettingStarted.card1.title': 'اجرای لانچر تعاملی',
+    'docs.section.gettingStarted.card1.body':
+      'از منوی هکری مود اسکن را انتخاب کن، URL هدف را بده و بگذار لانچر اسکریپت پایتون درست را بسازد و اجرا کند.',
+    'docs.section.gettingStarted.card2.title': 'اجرای مستقیم Deep Scan (پایتون)',
+    'docs.section.gettingStarted.card2.body':
+      'برای اتوماسیون یا CI/CD، entrypoint پایتون را صدا بزن و خروجی‌ها را در یک فولدر اختصاصی نگه دار.',
+    'docs.callout.outputs.title': 'خروجی‌ها کجا ذخیره می‌شوند؟',
+    'docs.callout.outputs.body':
+      'دیپ‌اسکن یک فولدر مثل <code>scan_results_YYYYMMDD_HHMMSS</code> می‌سازد و یک <code>scan_summary.json</code> یکپارچه می‌نویسد که برای گزارش‌گیری عالی است.',
+    'docs.section.cli.title': 'CLI و مودهای اسکن',
+    'docs.section.cli.lead':
+      'مود درست را انتخاب کن: چک سریع، ری‌تست متمرکز یا اسکن کامل.',
+    'docs.section.cli.card1.title': 'Deep Scan در برابر Normal Scan',
+    'docs.section.cli.card1.li1':
+      '<span class="font-semibold">Deep Scan</span>: پوشش حداکثری، ابزارهای خارجی فعال، کراول عمیق‌تر.',
+    'docs.section.cli.card1.li2':
+      '<span class="font-semibold">Normal Scan</span>: سریع‌تر، عمق کمتر، بدون ابزار خارجی.',
+    'docs.section.cli.card1.li3':
+      'برای ری‌تست، از ماژول‌های متمرکز (SQLi/XSS/…) استفاده کن.',
+    'docs.section.cli.card2.title': 'ورک‌فلو Proxy و TOR',
+    'docs.section.cli.card2.body':
+      'برای دیباگ از پروکسی و در صورت مجاز بودن در scope از TOR استفاده کن.',
+    'docs.section.arch.title': 'معماری',
+    'docs.section.arch.lead':
+      'بدان پشت صحنه چه می‌گذرد تا بتوانی خروجی را بهتر تفسیر و ابزار را توسعه دهی.',
+    'docs.section.arch.card.title': 'پایپ‌لاین اصلی',
+    'docs.section.arch.card.chip': 'هماهنگ‌سازی DeepScanner',
+    'docs.section.arch.m1.title': 'HTTP Client غیرهمزمان',
+    'docs.section.arch.m1.body': 'Timeout، ریدایرکت، TLS، UA، Proxy/TOR.',
+    'docs.section.arch.m2.title': 'Crawler و Discovery',
+    'docs.section.arch.m2.body': 'لینک‌ها، فرم‌ها، اندپوینت‌ها، JS، ورودی‌ها.',
+    'docs.section.arch.m3.title': 'اسکنرها',
+    'docs.section.arch.m3.body': 'SQLi، XSS، Auth، SSRF، Upload و …',
+    'docs.section.arch.m4.title': 'تجمیع و خروجی',
+    'docs.section.arch.m4.body': 'یافته‌های نرمال‌سازی‌شده → JSON',
+    'docs.section.modules.title': 'ماژول‌ها',
+    'docs.section.modules.lead':
+      'اسکنرهای تخصصی و ماژول‌های Recon که می‌توانند مستقل یا داخل دیپ‌اسکن اجرا شوند.',
+    'docs.section.modules.card1.title': 'اسکنرهای آسیب‌پذیری',
+    'docs.section.modules.card1.body':
+      'SQLi، XSS، Command Injection، Traversal، LFI/RFI، SSTI، CSRF، Open Redirect، Auth/Session، JWT، Upload، SSRF، XXE، IDOR…',
+    'docs.section.modules.card2.title': 'ماژول‌های Recon',
+    'docs.section.modules.card2.body':
+      'اسکن پورت، کشف دایرکتوری، Enumeration ساب‌دومین، Takeover، تست سرویس، تحلیل پسیو.',
+    'docs.callout.extend.title': 'توسعه AegisScan',
+    'docs.callout.extend.body':
+      'ماژول جدید را در پایتون اضافه کن، schema خروجی را ثابت نگه دار و یک گزینه منو در <code>aegis.sh</code> بساز.',
+    'docs.section.reporting.title': 'گزارش‌گیری',
+    'docs.section.reporting.lead':
+      'یافته‌ها را با شدت و شواهد به گزارش قابل اقدام تبدیل کن.',
+    'docs.section.reporting.card.title': 'ساختار scan_summary.json',
+    'docs.section.reporting.card.chip': 'قابل پردازش',
+    'docs.section.reporting.li1':
+      '<span class="font-semibold">discovery</span>: URL/فرم/اندپوینت/JS/ورودی/پورت/دایرکتوری.',
+    'docs.section.reporting.li2':
+      '<span class="font-semibold">vulnerabilities</span>: آمار severity/type + جزئیات.',
+    'docs.section.reporting.li3':
+      '<span class="font-semibold">external_tools</span>: ابزارهای استفاده‌شده.',
+    'docs.section.safety.title': 'ایمنی و اخلاق',
+    'docs.section.safety.lead':
+      'اسکن مسئولانه: مجوز، scope و کنترل اثرگذاری باید جدی گرفته شود.',
+    'docs.callout.legal.title': 'هشدار حقوقی',
+    'docs.callout.legal.body':
+      'فقط دارایی‌هایی را تست کن که مالک آن هستی یا مجوز کتبی صریح داری. اگر شک داری، اسکن نکن.',
+    'docs.section.safety.card.title': 'چک‌لیست عملیاتی',
+    'docs.section.safety.li1': 'Passive → Normal → Deep (با احتیاط افزایش بده).',
+    'docs.section.safety.li2': 'Rate limit و timeout را مطابق هدف تنظیم کن.',
+    'docs.section.safety.li3': 'یافته‌های خودکار را با تست دستی اعتبارسنجی کن.',
+    'docs.footer.note':
+      'نسخه چاپی می‌خواهی؟ خروجی <code>scan_summary.json</code> را بردار و از روی آن قالب گزارش بساز.',
+    'faq.panel.title': 'پاسخ سریع',
+    'faq.panel.body':
+      'روی هر سؤال کلیک کن تا جواب باز شود. برای مسائل حقوقی و scope همیشه قرارداد و قوانین محلی را ملاک بگیر.',
+    'faq.panel.highlightTitle': 'مهم‌ترین قانون',
+    'faq.panel.highlightBody': 'بدون مجوز → بدون اسکن.',
+    'docs.tab.overview': 'نمای کلی',
+    'docs.tab.architecture': 'معماری',
+    'docs.tab.modules': 'ماژول‌ها',
+    'docs.tab.best': 'Best Practice',
+    'docs.overview.p1':
+      'AegisScan یک فریم‌ورک امنیت وب مبتنی بر پایتون است که کراولرها، اسکنرها، ماژول‌های شناسایی و ابزارهای خارجی را از طریق یک CLI یکپارچه هماهنگ می‌کند.',
+    'docs.overview.p2':
+      'لانچر Bash با نام `aegis.sh` مثل یک فرانت‌اند راحت عمل می‌کند: نوع اسکن را از منوی هکری انتخاب می‌کنی و برایت اسکریپت پایتون مخصوص همان اسکن ساخته و اجرا می‌شود.',
+    'docs.overview.item1':
+      'برای پروژه‌های کامل و هدف‌های جدید از Deep Scan استفاده کن.',
+    'docs.overview.item2':
+      'برای ری‌تست و بررسی مجدد، از ماژول‌های متمرکز استفاده کن.',
+    'docs.overview.item3':
+      'خروجی JSON را وارد داشبورد، گزارش یا CI/CD کن.',
+    'docs.arch.p1':
+      'در هسته، `DeepScanner` یک HTTP Client غیرهمزمان، کراولرها، اسکنرها و تجمیع نتایج را مدیریت می‌کند تا نمای کاملی از هدف بسازد.',
+    'docs.arch.item1':
+      'HTTP Client: مدیریت Timeout، ریدایرکت، TLS، User-Agent و تنظیمات Proxy/TOR.',
+    'docs.arch.item2':
+      'اسکنرها: ماژول‌های مستقل مثل SQLi، XSS، Command Injection، LFI/RFI، SSTI، CSRF، Auth/Session و غیره.',
+    'docs.arch.item3':
+      'Recon: اسکن پورت، ساب‌دومین، دایرکتوری، تست سرویس و آنالیز پسیو.',
+    'docs.arch.p2':
+      'نتایج به آبجکت‌های پایتون نرمال‌سازی و بعد به JSON تبدیل می‌شوند تا بدون دست‌زدن به هسته، آن‌ها را پردازش کنی.',
+    'docs.modules.p1':
+      'هر گزینه منو در `aegis.sh` به یک اسکنر، ماژول Recon یا ورک‌فلو ترکیبی داخل پکیج `aegisscan` متصل است.',
+    'docs.modules.item1':
+      'اسکنرهای آسیب‌پذیری: SQLi، XSS، Command Injection، Path Traversal، LFI/RFI، SSTI، CSRF، Open Redirect، JWT، Upload، OAuth/OIDC، LDAP و غیره.',
+    'docs.modules.item2':
+      'ماژول‌های Recon: اسکن پورت پیشرفته، Directory Bruteforce، Subdomain Enumeration و Subdomain Takeover، تست سرویس.',
+    'docs.modules.item3':
+      'ماژول‌های خاص: تست API و GraphQL، NoSQL Injection، HTTP Request Smuggling، تشخیص و Bypass WAF، Cache Poisoning، Clickjacking.',
+    'docs.modules.p2':
+      'می‌توانی با اضافه‌کردن ماژول‌های جدید پایتونی و معرفی آن‌ها در منو، این ابزار را به شکل دلخواه توسعه دهی.',
+    'docs.best.p1':
+      'AegisScan را مسئولانه و مرحله‌به‌مرحله استفاده کن؛ کم شروع کن، همه چیز را لاگ کن و به محدودیت‌های سیستم مقابل احترام بگذار.',
+    'docs.best.item1':
+      'قبل از هر اسکن، مجوز کتبی بگیر و شدت تست را با محدوده کاری هماهنگ کن.',
+    'docs.best.item2':
+      'ابتدا اسکن‌های Passive و Normal را اجرا کن، سپس در صورت نیاز به Deep و ماژول‌های پرریسک برو.',
+    'docs.best.item3':
+      'تنظیمات اسکن و فایل‌های `scan_summary.json` را در کنار نوت‌های خودت نسخه‌بندی کن.',
+    'docs.best.item4':
+      'یافته‌های AegisScan را با تست دستی و ابزارهای دیگر ترکیب کن؛ فقط به یک منبع تکیه نکن.',
+    'docs.best.p2':
+      'AegisScan را با ریپورتینگ حرفه‌ای و دیسکلوزر مسئولانه ترکیب کن تا خروجی‌ات تکرارپذیر و با کیفیت بماند.',
+    'faq.title': 'سؤالات متداول',
+    'faq.subtitle':
+      'چند نکته مهم قبل از این‌که با AegisScan اسکن را شروع کنی.',
+    'faq.q1': 'استفاده از AegisScan قانونی است؟',
+    'faq.a1':
+      'بله، فقط روی دارایی‌هایی که مالک آن هستی یا مجوز کتبی داری. تست بدون مجوز می‌تواند غیرقانونی و غیراخلاقی باشد.',
+    'faq.q2': 'روی چه پلتفرم‌هایی کار می‌کند؟',
+    'faq.a2':
+      'AegisScan مبتنی بر Python 3 و Bash است و روی لینوکس و macOS عالی کار می‌کند. روی ویندوز می‌توانی از WSL یا محیط‌های سازگار برای اجرای Bash استفاده کنی.',
+    'faq.q3': 'چطور Wordlist یا ماژول‌ها را شخصی‌سازی کنم؟',
+    'faq.a3':
+      'ساختار پروژه اسکنرها، ماژول‌های Recon و ابزارها را جدا نگه می‌دارد. می‌توانی Wordlist عوض کنی، ماژول جدید اضافه کنی یا ماژول‌های فعلی را تغییر دهی و همچنان از همان CLI تعاملی استفاده کنی.',
+    'faq.q4': 'می‌شود AegisScan را وارد CI/CD کرد؟',
+    'faq.a4':
+      'بله. می‌توانی EntryPointهای پایتون یا ماژول‌های خاص را از Pipeline فراخوانی کنی، خروجی JSON بگیری و بر اساس سطح شدت، Build را Fail یا Pass کنی.',
+    'footer.note':
+      'AegisScan یک ابزار تحقیقاتی امنیتی است. همیشه قوانین محلی و اصول دیسکلوزر مسئولانه را رعایت کن.',
+  },
+};
+
+const rtlLangs = ['fa'];
+
+function applyLanguage(lang) {
+  const dict = translations[lang] || translations.en;
+  const elements = document.querySelectorAll('[data-i18n]');
+
+  elements.forEach((el) => {
+    const key = el.getAttribute('data-i18n');
+    const value = dict[key];
+    if (!value) return;
+
+    // Keep inner HTML for snippets containing HTML (like code spans)
+    el.innerHTML = value;
+  });
+
+  // Translate placeholders (e.g. docs search)
+  const placeholders = document.querySelectorAll('[data-i18n-placeholder]');
+  placeholders.forEach((el) => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    const value = dict[key];
+    if (!value) return;
+    if ('placeholder' in el) el.placeholder = value;
+  });
+
+  const body = document.getElementById('rootBody');
+  if (rtlLangs.includes(lang)) {
+    body.classList.add('rtl');
+  } else {
+    body.classList.remove('rtl');
+  }
+
+  const label = document.getElementById('langLabel');
+  if (label) label.textContent = lang.toUpperCase();
+
+  localStorage.setItem('aegis-lang', lang);
+
+  // Re-run docs search highlighting after language swap
+  const search = document.getElementById('docsSearch');
+  if (search && search.value.trim()) {
+    highlightDocsSearch(search.value.trim());
+  }
+}
+
+function setupLanguageSwitcher() {
+  const toggle = document.getElementById('langToggle');
+  const menu = document.getElementById('langMenu');
+  if (!toggle || !menu) return;
+
+  toggle.addEventListener('click', () => {
+    menu.classList.toggle('hidden');
+  });
+
+  menu.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-lang]');
+    if (!btn) return;
+    const lang = btn.getAttribute('data-lang');
+    applyLanguage(lang);
+    menu.classList.add('hidden');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!menu.contains(e.target) && !toggle.contains(e.target)) {
+      menu.classList.add('hidden');
+    }
+  });
+
+  const stored = localStorage.getItem('aegis-lang') || 'en';
+  applyLanguage(stored);
+}
+
+function setupFaqAccordion() {
+  const root = document.getElementById('faqAccordion');
+  if (!root) return;
+
+  root.addEventListener('click', (e) => {
+    const btn = e.target.closest('.faq-acc-btn');
+    if (!btn) return;
+    const item = btn.closest('.faq-acc-item');
+    const panel = item.querySelector('.faq-acc-panel');
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+
+    btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    item.classList.toggle('open', !expanded);
+
+    if (expanded) {
+      panel.hidden = true;
+    } else {
+      panel.hidden = false;
+    }
+  });
+}
+
+function clearHighlights(container) {
+  const marks = container.querySelectorAll('mark.docs-highlight');
+  marks.forEach((m) => {
+    const text = document.createTextNode(m.textContent);
+    m.replaceWith(text);
+  });
+}
+
+function highlightTextInElement(el, query) {
+  const q = query.toLowerCase();
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      if (!node.nodeValue) return NodeFilter.FILTER_REJECT;
+      const parent = node.parentElement;
+      if (!parent) return NodeFilter.FILTER_REJECT;
+      if (parent.closest('code, pre, script, style')) return NodeFilter.FILTER_REJECT;
+      if (!node.nodeValue.toLowerCase().includes(q)) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    },
+  });
+
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+
+  nodes.forEach((node) => {
+    const text = node.nodeValue;
+    const idx = text.toLowerCase().indexOf(q);
+    if (idx < 0) return;
+
+    const before = text.slice(0, idx);
+    const match = text.slice(idx, idx + query.length);
+    const after = text.slice(idx + query.length);
+
+    const mark = document.createElement('mark');
+    mark.className = 'docs-highlight';
+    mark.textContent = match;
+
+    const frag = document.createDocumentFragment();
+    if (before) frag.appendChild(document.createTextNode(before));
+    frag.appendChild(mark);
+    if (after) frag.appendChild(document.createTextNode(after));
+
+    node.parentNode.replaceChild(frag, node);
+  });
+}
+
+function highlightDocsSearch(query) {
+  const docs = document.getElementById('docs');
+  if (!docs) return;
+  clearHighlights(docs);
+  if (!query) return;
+
+  const sections = docs.querySelectorAll('[data-doc-item]');
+  sections.forEach((s) => {
+    highlightTextInElement(s, query);
+  });
+}
+
+function setupDocsSearch() {
+  const input = document.getElementById('docsSearch');
+  const docs = document.getElementById('docs');
+  if (!input || !docs) return;
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim();
+    highlightDocsSearch(q);
+  });
+}
+
+function setupDocsTocActive() {
+  const toc = document.getElementById('docsToc');
+  if (!toc) return;
+
+  const links = [...toc.querySelectorAll('a[data-doc-link]')];
+  const sections = links
+    .map((l) => document.getElementById(l.getAttribute('data-doc-link')))
+    .filter(Boolean);
+
+  const obs = new IntersectionObserver(
+    (entries) => {
+      const visible = entries
+        .filter((e) => e.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!visible) return;
+
+      const id = visible.target.id;
+      links.forEach((l) => l.classList.toggle('active', l.getAttribute('data-doc-link') === id));
+    },
+    { rootMargin: '-25% 0px -65% 0px', threshold: [0.05, 0.1, 0.2, 0.4] }
+  );
+
+  sections.forEach((s) => obs.observe(s));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setupLanguageSwitcher();
+  setupDocsSearch();
+  setupDocsTocActive();
+  setupFaqAccordion();
+});
+  </script>
+</body>
+</html>
+
