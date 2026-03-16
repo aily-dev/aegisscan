@@ -97,7 +97,7 @@ Python 3.8+    git    pip    (gcc for C++ extensions)
 
 ### Quick Install
 ```bash
-git clone https://github.com/USERNAME/aegisscan.git
+git clone https://github.com/aily-dev/aegisscan.git
 cd aegisscan
 pip install -r requirements.txt
 pip install -e .
@@ -106,12 +106,6 @@ pip install -e .
 ### Build Native Extensions *(optional — recommended for performance)*
 ```bash
 python setup.py build_ext --inplace
-```
-
-### Docker
-```bash
-docker pull USERNAME/aegisscan:latest
-docker run -it --rm USERNAME/aegisscan aegis scan https://target.com --full
 ```
 
 ---
