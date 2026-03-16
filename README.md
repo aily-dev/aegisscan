@@ -434,7 +434,7 @@ See [LICENSE](LICENSE) for full text.
 **Made with ❤️ for the security community**
 
 [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://python.org)
-[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://github.com/USERNAME/aegisscan)
+[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://github.com/aily-dev/aegisscan)
 
 *If AegisScan helped you, consider giving it a ⭐ on GitHub!*
 
